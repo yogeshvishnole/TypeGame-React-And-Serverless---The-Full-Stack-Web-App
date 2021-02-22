@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyledGame,
   StyledScore,
@@ -8,12 +8,15 @@ import {
 import { Strong } from "../styled/Random";
 
 const Game = ({ history }) => {
-  const [score, setScore] = useState(0);
   const MAX_SECONDS = 90;
+  const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+  const [currentCharacter, setCurrentCharacter] = useState("a");
+  const [score, setScore] = useState(0);
   const [ms, setMs] = useState(0);
   const [seconds, setSeconds] = useState(MAX_SECONDS);
 
   useEffect(() => {
+    setRandomCharacter();
     const currentTime = new Date();
     const interval = setInterval(() => updateTime(currentTime), 1);
     return () => {
@@ -22,22 +25,39 @@ const Game = ({ history }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const setRandomCharacter = () => {
+    const randomInt = Math.floor(Math.random() * 36);
+    setCurrentCharacter(characters[randomInt]);
+  };
+
   useEffect(() => {
     if (seconds <= -1) {
+      // Todo : save the score
       history.push("/gameOver");
     }
   }, [seconds, history]);
 
-  const keyUpHandler = (e) => {
-    console.log(e.key);
-  };
+  const keyUpHandler = useCallback(
+    (e) => {
+      if (e.key === currentCharacter) {
+        setScore((prevScore) => prevScore + 1);
+      } else {
+        if (score > 0) {
+          setScore((prevScore) => prevScore - 1);
+        }
+      }
+      setRandomCharacter();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentCharacter]
+  );
 
   useEffect(() => {
     document.addEventListener("keyup", keyUpHandler);
     return () => {
       document.removeEventListener("keyup", keyUpHandler);
     };
-  }, []);
+  }, [keyUpHandler]);
 
   const updateTime = (startTime) => {
     const endTime = new Date();
@@ -62,9 +82,9 @@ const Game = ({ history }) => {
   return (
     <StyledGame>
       <StyledScore>
-        Score:<Strong>0</Strong>
+        Score:<Strong>{score}</Strong>
       </StyledScore>
-      <StyledCharacter>A</StyledCharacter>
+      <StyledCharacter>{currentCharacter}</StyledCharacter>
       <StyledTimer>
         Time:{" "}
         <Strong>
