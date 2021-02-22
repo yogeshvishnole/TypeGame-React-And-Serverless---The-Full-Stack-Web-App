@@ -9,7 +9,7 @@ import { Strong } from "../styled/Random";
 
 const Game = ({ history }) => {
   const [score, setScore] = useState(0);
-  const MAX_SECONDS = 5;
+  const MAX_SECONDS = 90;
   const [ms, setMs] = useState(0);
   const [seconds, setSeconds] = useState(MAX_SECONDS);
 
@@ -27,6 +27,17 @@ const Game = ({ history }) => {
       history.push("/gameOver");
     }
   }, [seconds, history]);
+
+  const keyUpHandler = (e) => {
+    console.log(e.key);
+  };
+
+  useEffect(() => {
+    document.addEventListener("keyup", keyUpHandler);
+    return () => {
+      document.removeEventListener("keyup", keyUpHandler);
+    };
+  }, []);
 
   const updateTime = (startTime) => {
     const endTime = new Date();
