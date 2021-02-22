@@ -1,6 +1,6 @@
 import React from "react";
 import CTA from "../styled/CTA";
-import { Accent,StyledTitle } from "../styled/Random";
+import { Accent, StyledTitle } from "../styled/Random";
 
 const Home = () => {
   return (
