@@ -9,3 +9,7 @@ export const StyledTitle = styled.h1`
   text-align: center;
   margin-top: 3rem;
 `;
+
+export const Strong = styled.strong`
+  font-weight: bold;
+`;
