@@ -8,7 +8,12 @@ const table = base(process.env.AIRTABLE_TABLE);
 
 exports.handler = async (event) => {
   try {
-    const records = await table.select({}).firstPage();
+    const records = await table
+      .select({
+        sort: [{ field: "score", direction: "desc" }],
+        filterByFormula: `AND(name != "",score > 0)`,
+      })
+      .firstPage();
     const formattedRecords = records.map((record) => ({
       id: record.id,
       fields: record.fields,
@@ -18,6 +23,7 @@ exports.handler = async (event) => {
       body: JSON.stringify(formattedRecords),
     };
   } catch (err) {
+    console.log(err);
     return {
       statusCode: 500,
       body: JSON.stringify({ err: "Failed to query record in the airtable" }),
